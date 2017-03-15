@@ -44,19 +44,20 @@ seedBlock (Seed i) = MTBlock seedArr
       in Tuple thisEntry (Tuple (index + 1) thisEntry)
 
 nextBlock :: MTBlock -> MTBlock
-nextBlock (MTBlock arr) = MTBlock $ run do
-  stArr <- thaw arr
-  forE 0 n \index -> do
-    thisEntry <- unsafePeekSTArray stArr index
-    nextEntry <- unsafePeekSTArray stArr ((index + 1) `mod` n)
-    furtherEntry <- unsafePeekSTArray stArr ((index + m) `mod` n)
-    let y = (thisEntry .&. upperMask) .|. (nextEntry .&. lowerMask)
-        new = furtherEntry .^. (y `zshr` 1) .^.  ((y .&. 0x1) * -1727483681)
-    void $ pokeSTArray stArr index new
-  pure stArr
+nextBlock (MTBlock arr) = MTBlock $ pureST mkBlock
   where
-    run :: forall a. (forall h. Eff (st :: ST h) (STArray h a)) -> Array a
-    run act = pureST (act >>= unsafeFreeze)
+    mkBlock :: forall h. Eff (st :: ST h) (Array Int)
+    mkBlock = do
+      stArr <- thaw arr
+      let unsafePeek = unsafePeekSTArray stArr
+      forE 0 n \index -> do
+        thisEntry <- unsafePeek index
+        nextEntry <- unsafePeek ((index + 1) `mod` n)
+        furtherEntry <- unsafePeek ((index + m) `mod` n)
+        let y = (thisEntry .&. upperMask) .|. (nextEntry .&. lowerMask)
+            new = furtherEntry .^. (y `zshr` 1) .^.  ((y .&. 0x1) * -1727483681)
+        void $ pokeSTArray stArr index new
+      unsafeFreeze stArr
 
     unsafePeekSTArray :: forall a h r.
                          STArray h a -> Int -> Eff (st :: ST h | r) a
