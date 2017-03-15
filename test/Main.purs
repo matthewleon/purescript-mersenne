@@ -24,9 +24,8 @@ main = do
   logShow (unInstant generated - unInstant start)
 
   log "comparing to python"
-  logShow $ compareToPython 100 600
+  logShow $ compareToPython 100 10000
   logShow $ compareToPython 0 10000
-  logShow $ compareToPython bottom 10000
   logShow $ compareToPython top 10000
 
   where

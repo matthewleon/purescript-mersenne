@@ -14,7 +14,7 @@ next :: MTState -> Tuple Int MTState
 next (MTState blk i) = Tuple (temper $ lookup blk' i) (MTState blk' i')
   where
     blk' = if i == 0 then nextBlock blk else blk
-    i' = i + 1 `mod` blockSize
+    i' = (i + 1) `mod` blockSize
     temper y =
       let y'   = y    .^. (y `zshr` 11)
           y''  = y'   .^. ((y' `shl` 7) .&. -1658038656)
