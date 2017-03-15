@@ -51,16 +51,12 @@ nextBlock (MTBlock arr) = MTBlock $ run do
     nextEntry <- unsafePeekSTArray stArr ((index + 1) `mod` n)
     furtherEntry <- unsafePeekSTArray stArr ((index + m) `mod` n)
     let y = (thisEntry .&. upperMask) .|. (nextEntry .&. lowerMask)
-        new = furtherEntry .^. (y `zshr` 1) .^. mag (y .&. 0x1)
+        new = furtherEntry .^. (y `zshr` 1) .^.  ((y .&. 0x1) * -1727483681)
     void $ pokeSTArray stArr index new
   pure stArr
   where
     run :: forall a. (forall h. Eff (st :: ST h) (STArray h a)) -> Array a
     run act = pureST (act >>= unsafeFreeze)
-
-    mag :: Int -> Int
-    mag 0 = 0
-    mag _ = -1727483681
 
     unsafePeekSTArray :: forall a h r.
                          STArray h a -> Int -> Eff (st :: ST h | r) a
