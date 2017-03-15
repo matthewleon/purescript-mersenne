@@ -49,7 +49,13 @@ class MT19937:
         self.index = 0
 
 # our additions, for testing
+def twos_comp(val):
+    """compute the 2's compliment of int value val"""
+    if (val & (1 << 31)) != 0: # if sign bit is set e.g., 8bit: 128-255
+        val = val - (1 << 32)        # compute negative value
+    return val                         # return positive value as is
+
 seed = int(sys.argv[1]) if len(sys.argv) > 1 else 0
 count = int(sys.argv[2]) if len(sys.argv) > 2 else 10
 mt = MT19937(seed)
-print([mt.extract_number() for i in range(count)])
+sys.stdout.write(str([twos_comp(mt.extract_number()) for i in range(count)]))

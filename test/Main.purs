@@ -4,9 +4,11 @@ import Prelude
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log, logShow)
 import Control.Monad.Eff.Now (NOW, now)
+import Data.Array (fromFoldable)
 import Data.DateTime.Instant (unInstant)
 import Data.List (length, reverse)
 import Data.List.Types (List(..), (:))
+import Data.String (joinWith)
 import Data.Tuple (Tuple(..))
 
 import System.Random.Mersenne (seed, int32)
@@ -14,19 +16,39 @@ import System.Random.Mersenne.Types (MTState)
 
 main :: Eff (now :: NOW, console :: CONSOLE) Unit
 main = do
+  log "timing generation"
   start <- now
   let ints = randomInts 100 1000000
   generated <- now
   log $ "generated list of " <> show (length ints) <> " random ints."
   logShow (unInstant generated - unInstant start)
+
+  log "comparing to python"
+  logShow $ compareToPython 100 600
+  logShow $ compareToPython 0 10000
+  logShow $ compareToPython bottom 10000
+  logShow $ compareToPython top 10000
+
   where
     randomInts :: Int -> Int -> List Int
     randomInts s length = reverse $ go (seed s) Nil 0
       where
         go :: MTState -> List Int -> Int -> List Int
-        -- tail recursive, builds backward
-        go state accum index
+        go state accum index -- tail recursive, builds backward
           | (index < length) =
             case int32 state
               of (Tuple i state') -> go state' (i : accum) (index + 1)
           | otherwise = accum
+
+    compareToPython :: Int -> Int -> Boolean
+    compareToPython s count = randomIntsStr s count == pythonRandomInts s count
+
+    randomIntsStr :: Int -> Int -> String
+    randomIntsStr s count =
+      "[" <> joinWith ", " (fromFoldable $ show <$> randomInts s count) <> "]"
+
+    pythonRandomInts :: Int -> Int -> String
+    pythonRandomInts s count =
+      exec "python" ["test/mersenne.py", show s, show count]
+
+foreign import exec :: String -> Array String -> String

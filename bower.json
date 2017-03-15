@@ -28,6 +28,7 @@
   "devDependencies": {
     "purescript-console": "^2.0.0",
     "purescript-eff": "^2.0.0",
-    "purescript-now": "^2.0.0"
+    "purescript-now": "^2.0.0",
+    "purescript-strings": "^2.1.0"
   }
 }
