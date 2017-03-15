@@ -46,30 +46,13 @@ seedBlock (Seed i) = MTBlock seedArr
 nextBlock :: MTBlock -> MTBlock
 nextBlock (MTBlock arr) = MTBlock $ run do
   stArr <- thaw arr
-
-  forE 0 (n - m) \index -> do
+  forE 0 n \index -> do
     thisEntry <- unsafePartial $ fromJust <$> peekSTArray stArr index
-    nextEntry <- unsafePartial $ fromJust <$> peekSTArray stArr (index + 1)
-    furtherEntry <- unsafePartial $ fromJust <$> peekSTArray stArr (index + m)
+    nextEntry <- unsafePartial $ fromJust <$> peekSTArray stArr ((index + 1) `mod` n)
+    furtherEntry <- unsafePartial $ fromJust <$> peekSTArray stArr ((index + m) `mod` n)
     let y = (thisEntry .&. upperMask) .|. (nextEntry .&. lowerMask)
         new = furtherEntry .^. (y `zshr` 1) .^. mag (y .&. 0x1)
     void $ pokeSTArray stArr index new
-
-  forE (n - m) (n - 1) \index -> do
-    thisEntry <- unsafePartial $ fromJust <$> peekSTArray stArr index
-    nextEntry <- unsafePartial $ fromJust <$> peekSTArray stArr (index + 1)
-    furtherEntry <- unsafePartial $ fromJust <$> peekSTArray stArr (index + m - n)
-    let y = (thisEntry .&. upperMask) .|. (nextEntry .&. lowerMask)
-        new = furtherEntry .^. (y `zshr` 1) .^. mag (y .&. 0x1)
-    void $ pokeSTArray stArr index new
-
-  thisEntry <- unsafePartial $ fromJust <$> peekSTArray stArr (n - 1)
-  nextEntry <- unsafePartial $ fromJust <$> peekSTArray stArr 0
-  furtherEntry <- unsafePartial $ fromJust <$> peekSTArray stArr (m - 1)
-  let y = (thisEntry .&. upperMask) .|. (nextEntry .&. lowerMask)
-      new = furtherEntry .^. (y `zshr` 1) .^. mag (y .&. 0x1)
-  pokeSTArray stArr (n - 1) new
-
   pure stArr
   where
     run :: forall a. (forall h. Eff (st :: ST h) (STArray h a)) -> Array a
