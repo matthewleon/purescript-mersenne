@@ -47,9 +47,9 @@ nextBlock :: MTBlock -> MTBlock
 nextBlock (MTBlock arr) = MTBlock $ run do
   stArr <- thaw arr
   forE 0 n \index -> do
-    thisEntry <- unsafePartial $ fromJust <$> peekSTArray stArr index
-    nextEntry <- unsafePartial $ fromJust <$> peekSTArray stArr ((index + 1) `mod` n)
-    furtherEntry <- unsafePartial $ fromJust <$> peekSTArray stArr ((index + m) `mod` n)
+    thisEntry <- unsafePeekSTArray stArr index
+    nextEntry <- unsafePeekSTArray stArr ((index + 1) `mod` n)
+    furtherEntry <- unsafePeekSTArray stArr ((index + m) `mod` n)
     let y = (thisEntry .&. upperMask) .|. (nextEntry .&. lowerMask)
         new = furtherEntry .^. (y `zshr` 1) .^. mag (y .&. 0x1)
     void $ pokeSTArray stArr index new
@@ -61,6 +61,10 @@ nextBlock (MTBlock arr) = MTBlock $ run do
     mag :: Int -> Int
     mag 0 = 0
     mag _ = -1727483681
+
+    unsafePeekSTArray :: forall a h r.
+                         STArray h a -> Int -> Eff (st :: ST h | r) a
+    unsafePeekSTArray a i = unsafePartial (fromJust <$> peekSTArray a i)
 
 lookup :: MTBlock -> Int -> Int
 lookup (MTBlock arr) i = unsafePartial $ fromJust (arr !! (i `mod` n))
