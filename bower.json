@@ -18,7 +18,6 @@
   ],
   "dependencies": {
     "purescript-prelude": "^2.5.0",
-    "purescript-lists": "^3.4.0",
     "purescript-arrays": "^3.2.1",
     "purescript-integers": "^2.1.1",
     "purescript-maybe": "^2.1.1",
@@ -28,6 +27,7 @@
   "devDependencies": {
     "purescript-console": "^2.0.0",
     "purescript-eff": "^2.0.0",
+    "purescript-lists": "^3.4.0",
     "purescript-now": "^2.0.0",
     "purescript-strings": "^2.1.0"
   }

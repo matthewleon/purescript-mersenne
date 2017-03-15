@@ -8,11 +8,10 @@ module System.Random.Mersenne.MTBlock (
 import Prelude
 import Control.Monad.Eff (Eff, forE)
 import Control.Monad.ST (ST, pureST)
-import Data.Array ((!!), fromFoldable)
+import Data.Array ((:), (!!))
 import Data.Array.ST (unsafeFreeze, thaw, peekSTArray, pokeSTArray)
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Int.Bits ((.&.), (.|.), (.^.), shl, zshr)
-import Data.List ((:))
 import Data.Tuple (Tuple(..))
 import Data.Unfoldable (unfoldr)
 
@@ -24,7 +23,8 @@ seedBlock :: Seed -> MTBlock
 seedBlock (Seed i) = MTBlock seedArr
   where
     seedArr :: Array Int
-    seedArr = fromFoldable $ firstEntry : unfoldr go (Tuple 1 firstEntry)
+    --TODO: this is probably slow
+    seedArr = firstEntry : unfoldr go (Tuple 1 firstEntry)
 
     firstEntry :: Int
     firstEntry = i `zshr` 0
