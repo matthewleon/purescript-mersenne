@@ -1,6 +1,9 @@
 {
   "name": "purescript-mersenne",
   "homepage": "https://github.com/matthewleon/purescript-mersenne",
+  "authors": [
+    "Matthew Leon <ml@matthewleon.com>"
+  ],
   "description": "Purescript Mersenne Twister",
   "license": "MIT",
   "repository": {
