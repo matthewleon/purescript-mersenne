@@ -9,7 +9,7 @@ import Prelude
 import Control.Monad.Eff (Eff, forE)
 import Control.Monad.ST (ST, pureST)
 import Data.Array ((!!), fromFoldable)
-import Data.Array.ST (STArray, unsafeFreeze, thaw, peekSTArray, pokeSTArray)
+import Data.Array.ST (unsafeFreeze, thaw, peekSTArray, pokeSTArray)
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Int.Bits ((.&.), (.|.), (.^.), shl, zshr)
 import Data.List ((:))
@@ -49,7 +49,7 @@ nextBlock (MTBlock arr) = MTBlock $ pureST mkBlock
     mkBlock :: forall h. Eff (st :: ST h) (Array Int)
     mkBlock = do
       stArr <- thaw arr
-      let unsafePeek = unsafePeekSTArray stArr
+      let unsafePeek i = unsafePartial (fromJust <$> peekSTArray stArr i)
       forE 0 n \index -> do
         thisEntry <- unsafePeek index
         nextEntry <- unsafePeek ((index + 1) `mod` n)
@@ -58,10 +58,6 @@ nextBlock (MTBlock arr) = MTBlock $ pureST mkBlock
             new = furtherEntry .^. (y `zshr` 1) .^.  ((y .&. 0x1) * -1727483681)
         void $ pokeSTArray stArr index new
       unsafeFreeze stArr
-
-    unsafePeekSTArray :: forall a h r.
-                         STArray h a -> Int -> Eff (st :: ST h | r) a
-    unsafePeekSTArray a i = unsafePartial (fromJust <$> peekSTArray a i)
 
 lookup :: MTBlock -> Int -> Int
 lookup (MTBlock arr) i = unsafePartial $ fromJust (arr !! (i `mod` n))
