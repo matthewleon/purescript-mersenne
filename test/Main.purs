@@ -21,9 +21,9 @@ main = do
   log $ "generated list of " <> show (length ints) <> " random ints."
 
   log "comparing to python"
-  logShow $ compareToPython 100 10000
-  logShow $ compareToPython 0 10000
-  logShow $ compareToPython top 10000
+  logShow $ compareToPython 100 100000
+  logShow $ compareToPython 0 100000
+  logShow $ compareToPython top 100000
 
   where
     randomInts :: Int -> Int -> List Int
