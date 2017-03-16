@@ -3,9 +3,8 @@ module Test.Main where
 import Prelude
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log, logShow)
-import Control.Monad.Eff.Now (NOW, now)
+import Control.Monad.Eff.Console.Timer (Timer, time, timeEnd)
 import Data.Array (fromFoldable)
-import Data.DateTime.Instant (unInstant)
 import Data.List (length, reverse)
 import Data.List.Types (List(..), (:))
 import Data.String (joinWith)
@@ -14,14 +13,12 @@ import Data.Tuple (Tuple(..))
 import System.Random.Mersenne (seed, int32)
 import System.Random.Mersenne.Types (MTState)
 
-main :: Eff (now :: NOW, console :: CONSOLE) Unit
+main :: Eff (console :: CONSOLE) Unit
 main = do
-  log "timing generation"
-  start <- now
+  timer :: Timer "generation" <- time
   let ints = randomInts 100 1000000
-  generated <- now
+  timeEnd timer
   log $ "generated list of " <> show (length ints) <> " random ints."
-  logShow (unInstant generated - unInstant start)
 
   log "comparing to python"
   logShow $ compareToPython 100 10000
