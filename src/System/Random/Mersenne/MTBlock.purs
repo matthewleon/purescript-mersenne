@@ -8,9 +8,9 @@ module System.Random.Mersenne.MTBlock (
 import Prelude
 import Control.Monad.Eff (Eff, forE)
 import Control.Monad.ST (ST, pureST)
-import Data.Array ((:), (!!))
+import Data.Array ((:), unsafeIndex)
 import Data.Array.ST (STArray, unsafeFreeze, thaw)
-import Data.Maybe (Maybe(..), fromJust)
+import Data.Maybe (Maybe(..))
 import Data.Int.Bits ((.&.), (.|.), (.^.), shl, zshr)
 import Data.Tuple (Tuple(..))
 import Data.Unfoldable (unfoldr)
@@ -60,7 +60,7 @@ nextBlock (MTBlock arr) = MTBlock $ pureST mkBlock
       unsafeFreeze stArr
 
 lookup :: MTBlock -> Int -> Int
-lookup (MTBlock arr) i = unsafePartial $ fromJust (arr !! (i `mod` n))
+lookup (MTBlock arr) i = unsafePartial $ arr `unsafeIndex` (i `mod` n)
 
 n :: Int
 n = 624
