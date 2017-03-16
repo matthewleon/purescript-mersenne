@@ -7,3 +7,14 @@ exports.unsafePeekSTArray = function (xs) {
     };
   };
 };
+
+exports.unsafePokeSTArray = function (xs) {
+  return function (i) {
+    return function (a) {
+      return function () {
+        xs[i] = a;
+        return {};
+      };
+    };
+  };
+};
