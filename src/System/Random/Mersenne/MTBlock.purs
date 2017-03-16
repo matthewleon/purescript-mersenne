@@ -9,7 +9,7 @@ import Prelude
 import Control.Monad.Eff (Eff, forE)
 import Control.Monad.ST (ST, pureST)
 import Data.Array ((:), (!!))
-import Data.Array.ST (unsafeFreeze, thaw, peekSTArray, pokeSTArray)
+import Data.Array.ST (STArray, unsafeFreeze, thaw, pokeSTArray)
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Int.Bits ((.&.), (.|.), (.^.), shl, zshr)
 import Data.Tuple (Tuple(..))
@@ -49,7 +49,7 @@ nextBlock (MTBlock arr) = MTBlock $ pureST mkBlock
     mkBlock :: forall h. Eff (st :: ST h) (Array Int)
     mkBlock = do
       stArr <- thaw arr
-      let unsafePeek i = unsafePartial (fromJust <$> peekSTArray stArr i)
+      let unsafePeek = unsafePeekSTArray stArr
       forE 0 n \index -> do
         thisEntry <- unsafePeek index
         nextEntry <- unsafePeek ((index + 1) `mod` n)
@@ -73,3 +73,6 @@ upperMask = -2147483648 --0x80000000
 
 lowerMask :: Int
 lowerMask = 0x7fffffff
+
+foreign import unsafePeekSTArray
+  :: forall a h r . STArray h a -> Int -> Eff (st :: ST h | r) a
