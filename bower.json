@@ -25,6 +25,7 @@
     "purescript-integers": "^2.1.1",
     "purescript-maybe": "^2.1.1",
     "purescript-unfoldable": "^2.0.0",
+    "purescript-st": "matthewleon/purescript-st#STEff",
     "purescript-tuples": "^3.2.0"
   },
   "devDependencies": {

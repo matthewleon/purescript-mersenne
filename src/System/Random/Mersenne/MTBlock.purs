@@ -7,7 +7,7 @@ module System.Random.Mersenne.MTBlock (
 
 import Prelude
 import Control.Monad.Eff (Eff, forE)
-import Control.Monad.ST (ST, pureST)
+import Control.Monad.ST (ST, STEff, pureST)
 import Data.Array ((:), unsafeIndex)
 import Data.Array.ST (STArray, unsafeFreeze, thaw)
 import Data.Maybe (Maybe(..))
@@ -46,7 +46,7 @@ seedBlock (Seed i) = MTBlock seedArr
 nextBlock :: MTBlock -> MTBlock
 nextBlock (MTBlock arr) = MTBlock $ pureST mkBlock
   where
-    mkBlock :: forall h. Eff (st :: ST h) (Array Int)
+    mkBlock :: STEff (Array Int)
     mkBlock = do
       stArr <- thaw arr
       let unsafePeek = unsafePeekSTArray stArr
