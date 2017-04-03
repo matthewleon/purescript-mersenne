@@ -20,18 +20,18 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-prelude": "^2.5.0",
-    "purescript-arrays": "^3.2.1",
-    "purescript-integers": "^2.1.1",
-    "purescript-maybe": "^2.1.1",
-    "purescript-unfoldable": "^2.0.0",
-    "purescript-tuples": "^3.2.0"
+    "purescript-prelude": "^3.0.0",
+    "purescript-arrays": "^4.0.1",
+    "purescript-integers": "^3.0.0",
+    "purescript-maybe": "^3.0.0",
+    "purescript-unfoldable": "^3.0.0",
+    "purescript-tuples": "^4.0.0"
   },
   "devDependencies": {
-    "purescript-console": "^2.0.0",
-    "purescript-eff": "^2.0.0",
-    "purescript-lists": "^3.4.0",
-    "purescript-strings": "^2.1.0",
-    "purescript-console-timer": "^0.0.1"
+    "purescript-console": "^3.0.0",
+    "purescript-eff": "^3.0.0",
+    "purescript-lists": "^4.0.1",
+    "purescript-strings": "^3.0.0",
+    "purescript-console-browser-specific": "^1.0.0"
   }
 }
